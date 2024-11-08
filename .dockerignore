@@ -1,0 +1,22 @@
+# dependencies
+node_modules
+npm-debug.log
+
+# logs
+*.log
+logs
+*.log.*
+
+# env files
+.env.local
+.env.*.local
+.env.example 
+
+# tests
+__tests__
+__mocks__
+coverage
+*.spec.js
+*.test.js
+
+.DS_Store

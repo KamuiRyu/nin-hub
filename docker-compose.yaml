@@ -1,0 +1,36 @@
+services:
+  app:
+    container_name: nin-hub-app
+    build:
+      context: .
+      target: ${NODE_ENV:-development}
+      dockerfile: docker/Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - MONGO_URI=mongodb://db:27017/${DB_DATABASE:-nin_hub}
+    volumes:
+      - .:/app
+    networks:
+      - app_network
+
+  db:
+    image: mongo:latest
+    container_name: nin-hub-db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD:-123}
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - '27017:27017'
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
