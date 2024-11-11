@@ -9,7 +9,9 @@ services:
       - '3000:3000'
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      - MONGO_URI=mongodb://db:27017/${DB_DATABASE:-nin_hub}
+      - MONGO_URI=${MONGO_URI:-mongodb://${MONGO_USERNAME:-admin}:{MONGO_PASSWORD:-123}@db:27017/{MONGO_DATABASE-nin_hub}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
     volumes:
       - .:/app
     networks:
@@ -19,14 +21,27 @@ services:
     image: mongo:latest
     container_name: nin-hub-db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME:-admin}
-      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD:-123}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-123}
+      - MONGO_DATABASE=${MONGO_DATABASE-nin_hub}
     volumes:
       - mongodb_data:/data/db
+      - ./docker/mongodb/init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+
     ports:
       - '27017:27017'
     networks:
       - app_network
+
+  redis:
+    image: redis:latest
+    container_name: nin-hub-redis
+    ports:
+      - '6379:6379'
+    networks:
+      - app_network
+    volumes:
+      - redis_data:/data
 
 networks:
   app_network:
@@ -34,3 +49,4 @@ networks:
 
 volumes:
   mongodb_data:
+  redis_data:
